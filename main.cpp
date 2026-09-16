@@ -1,39 +1,81 @@
 #include <iostream>
 #include <filesystem>
 #include <zip.h>
+#include <string>
+#include <stdexcept>
+#include <cstdio>
 
 namespace fs = std::filesystem;
 
 int main(int argc, char* argv[]) {
-
+    
     if (argc != 3 ) {
 
-        std::cerr << "Usage: " << argv[0] << "<path-to-jar> " << "path-to-payload.class> \n";
-
+        std::cerr << "Usage: " << argv[0] << " <path-to-jar> <path-to-payload.class>\n";
+        
         return 1;
 
-    }
+    };
 
     
-    fs::path jar = argv[1];
+    fs::path jar_path = argv[1];
 
-    if(!fs::is_regular_file(jar)) {
+    if(!fs::is_regular_file(jar_path)) {
 
-        std::cerr << jar << "Is not a File \n"
-    }
+        std::cerr << jar_path << "Is not a File \n";
+        return 1;
+    };
 
     fs::path payload = argv[2];
 
-    fs::path payload = argv[2];
+    if(!fs::is_regular_file(payload)) {
 
-        if(!fs::is_regular_file(payload)) {
+        std::cerr << payload << "Is not a File \n";
+        return 1;
 
-        std::cerr << payload << "Is not a File \n"
+    };
+
+    int err;
+    zip_t *jar; 
+    
+    if ((jar = zip_open(jar_path.string().c_str(), 0, &err )) == NULL ) {
+        zip_error_t error;
+        zip_error_init_with_code(&error, err);
+        fprintf(stderr, "%s: cannot open zip archive '%s': %s\n",
+	        argv[0], jar_path.string().c_str(), zip_error_strerror(&error));
+        zip_error_fini(&error);
+        return -1;
+    };
+
+
+    int index = zip_name_locate(jar, "fabric.mod.json", ZIP_FL_ENC_GUESS);
+
+    if (index < 0) throw std::runtime_error("couldnt find fabric.mod.json");
+
+    zip_stat_t st; 
+
+    zip_stat_init(&st);
+
+    if (zip_stat(jar, "fabric.mod.json", 0, &st) != 0 || !(st.valid & ZIP_STAT_SIZE)) {
+        throw std::runtime_error("stat failed at fabric.mod.json");
     }
 
+
+    std::string buf(static_cast<size_t>(st.size), '\0');
+
+    zip_file_t *zf = zip_fopen(jar, "fabric.mod.json", 0);
+    if (!zf) throw std::runtime_error("opening fabric.mod.json failed");
     
+    zip_int64_t n = zip_fread(zf, buf.data(), buf.size());
+    zip_fclose(zf);
 
+    if ( n < 0 ) throw std::runtime_error("reading fabric.mod.json failed");
 
+    buf.resize(static_cast<size_t>(n));
+
+    std::cout << buf << "test print uwu\n";
+
+    zip_discard(jar);
     return 0; 
 
 
