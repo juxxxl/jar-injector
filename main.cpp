@@ -4,18 +4,43 @@
 #include <string>
 #include <stdexcept>
 #include <cstdio>
+#include <set>
+#include <fstream>
 
 namespace fs = std::filesystem;
 
 int main(int argc, char* argv[]) {
     
-    if (argc != 3 ) {
+    if (argc < 3 || argc > 4 ) {
 
         std::cerr << "Usage: " << argv[0] << " <path-to-jar> <path-to-payload.class>\n";
         
         return 1;
 
     };
+
+    if (argc == 4) {
+
+        fs::path wordlist = argv[4];
+
+        if (wordlist.extension() != ".txt") {
+
+            std::cerr << "Given Wordlist Path has to be a .txt file";
+
+        };
+
+    } else {
+
+        std::ifstream wordlist("wordlist.txt");
+
+        if (!file) {
+
+            std::cerr << "Could not open wordlist.txt\n";
+            return 1;
+
+        }
+
+    }
 
     
     fs::path jar_path = argv[1];
@@ -79,5 +104,35 @@ int main(int argc, char* argv[]) {
     return 0; 
 
 
+
+}
+
+std::string insert_entrypoint(mod_json, class_name, worldlist_txt_path) {
+
+    
+
+
+}
+
+
+std::set<std::string> list_folders(zip_t* archive) {
+
+    std::set<std::string> folders;
+
+    zip_int64_t n = zip_get_num_entries(archive, 0);
+
+    for(int i = 0, i < n , i++) {
+
+        std::string name = zip_get_name(archive, i, 0)
+
+        folders.insert(name);
+
+    };
+
+};
+
+std::string generate_path(wordlist, present_folders) {
+
+    
 
 }
