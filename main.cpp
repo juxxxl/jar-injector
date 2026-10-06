@@ -12,27 +12,18 @@ namespace fs = std::filesystem;
 int main(int argc, char* argv[]) {
     
     if (argc < 3 || argc > 4 ) {
-
         std::cerr << "Usage: " << argv[0] << " <path-to-jar> <path-to-payload.class>\n";
-        
         return 1;
-
     };
 
     if (argc == 4) {
-
         fs::path wordlist = argv[4];
-
         if (wordlist.extension() != ".txt") {
-
             std::cerr << "Given Wordlist Path has to be a .txt file";
-
         };
 
     } else {
-
         std::ifstream wordlist("wordlist.txt");
-
         if (!file) {
 
             std::cerr << "Could not open wordlist.txt\n";
@@ -46,7 +37,6 @@ int main(int argc, char* argv[]) {
     fs::path jar_path = argv[1];
 
     if(!fs::is_regular_file(jar_path)) {
-
         std::cerr << jar_path << "Is not a File \n";
         return 1;
     };
@@ -118,15 +108,11 @@ std::string insert_entrypoint(mod_json, class_name, worldlist_txt_path) {
 std::set<std::string> list_folders(zip_t* archive) {
 
     std::set<std::string> folders;
-
     zip_int64_t n = zip_get_num_entries(archive, 0);
 
     for(int i = 0, i < n , i++) {
-
         std::string name = zip_get_name(archive, i, 0)
-
         folders.insert(name);
-
     };
 
     return folders
@@ -137,15 +123,11 @@ std::vector<std::string> load_list(const std::string& path) {
 
 
     std::vector<std::string> words;
-
     std::ifstream file(path);
-
     std::string line;
 
     while(std::getline(file, line)) {
-
         if(!line.empty()) words.push_back(line);
-
     }
 
     return words; 
@@ -161,9 +143,7 @@ std::string generate_path(std::vector<std::string>& wordlist,
     for(const auto& w: wordlist) {
 
         if(present_entries.count(w) == 0) {
-
             result.push_back(w);
-
         }
 
     }
