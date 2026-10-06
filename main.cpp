@@ -129,10 +129,54 @@ std::set<std::string> list_folders(zip_t* archive) {
 
     };
 
+    return folders
+
 };
 
-std::string generate_path(wordlist, present_folders) {
+std::vector<std::string> load_list(const std::string& path) {
+
+
+    std::vector<std::string> words;
+
+    std::ifstream file(path);
+
+    std::string line;
+
+    while(std::getline(file, line)) {
+
+        if(!line.empty()) words.push_back(line);
+
+    }
+
+    return words; 
+
+}
+
+std::string generate_path(std::vector<std::string>& wordlist,
+                          const std::unordered_set<std::string>& present_entries) {
+
+    
+    std::vector<std::string> result;
+
+    for(const auto& w: wordlist) {
+
+        if(present_entries.count(w) == 0) {
+
+            result.push_back(w);
+
+        }
+
+    }
+
+    static std::mt19937 gen(std::random_device{}());   // seeded once
+    std::uniform_int_distribution<int> dist(1, 5);  // min and max both included
+    int num_of_subfolders= dist(gen);
+
+    std::string generated_path;
+
+    
 
     
 
 }
+
